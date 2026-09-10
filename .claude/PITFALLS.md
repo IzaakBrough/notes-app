@@ -1,0 +1,46 @@
+# Pitfalls
+
+A running log of mistakes, gotchas, and non-obvious fixes discovered during
+`/loop` runs. This exists so an unattended session doesn't burn an iteration
+rediscovering something a previous iteration already learned the hard way —
+`.claude/loop.md` reads this at the start of every iteration and appends to
+it when something's worth remembering.
+
+This is a log of _reusable_ lessons, not a changelog or a TODO list:
+
+- Good entry: "`npm run build` silently succeeds even when the TypeScript
+  config is broken — check its exit code, not just that it printed
+  something."
+- Bad entry: "Fixed the signup form bug." (that's what the commit message and
+  PR are for — this file is for the _lesson_, not the change)
+
+Keep entries short. If this file grows past a page or two, that's a signal
+some of these should become permanent rules in `CLAUDE.md` instead — a
+recurring pitfall is really a missing convention.
+
+## Log
+
+<!-- Newest entries at the top. Format:
+
+### <short title>
+<one or two sentences: what went wrong, and what to do instead>
+
+-->
+
+### The placeholder-marker scan in `verify.sh` can false-positive on lockfiles
+
+`package-lock.json`'s generated integrity hashes are arbitrary base64 and can
+coincidentally contain "TODO"/"FIXME"/"HACK"/"XXX" as a substring, failing
+the scan for no real reason. Lockfiles (`package-lock.json`,
+`npm-shrinkwrap.json`, `yarn.lock`, `pnpm-lock.yaml`) are now excluded from
+the scan in `scripts/verify.sh` — if a similar generated file trips this
+again, exclude it the same way rather than touching real source.
+
+### `git worktree remove` can fail with "Permission denied" on Windows/OneDrive
+
+On a repo synced through OneDrive (or similar), `git worktree remove` can
+fail to delete the directory even after git has otherwise finished with it —
+usually a sync client briefly holding a file handle. Don't treat that as the
+removal having failed: run `git worktree prune`, then check `git worktree
+list` — if the worktree is already gone from that list, it's safe to
+`rm -rf` the leftover directory and `.git/worktrees/<name>` by hand.

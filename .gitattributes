@@ -1,0 +1,6 @@
+# Normalize everything to LF in the repo regardless of the checkout OS's
+# line-ending settings. This matters most for scripts/verify.sh and
+# tests/smoke.test.sh: a CRLF shebang line or CRLF inside a bash script
+# breaks execution on Linux/macOS even though it looks fine on Windows.
+* text=auto eol=lf
+*.sh text eol=lf
