@@ -69,8 +69,38 @@ if [ -f server/package.json ]; then
   verify_node_project "server"
 fi
 
+verify_python_project() {
+  local dir="$1"
+  echo "==> Detected Python project ($dir/pyproject.toml)"
+  (
+    cd "$dir"
+    if [ ! -d .venv ]; then
+      python -m venv .venv
+    fi
+    if [ -f .venv/Scripts/python.exe ]; then
+      venv_python=".venv/Scripts/python.exe"
+    else
+      venv_python=".venv/bin/python"
+    fi
+    "$venv_python" -m pip install -q --upgrade pip
+    "$venv_python" -m pip install -q -e ".[dev]"
+    "$venv_python" -m ruff check .
+    "$venv_python" -m ruff format --check .
+    "$venv_python" -m pytest
+  )
+}
+
+# server/'s Python backend gets its own venv-backed check, same pattern as
+# the Node blocks above. A bare root-level pyproject.toml/requirements.txt
+# is not expected in this template (the frontend owns the repo root), so it
+# only gets a best-effort check using whatever's already on PATH.
+if [ -f server/pyproject.toml ]; then
+  ran_something=1
+  verify_python_project "server"
+fi
+
 if [ -f pyproject.toml ] || [ -f requirements.txt ] || [ -f setup.py ]; then
-  echo "==> Detected Python project"
+  echo "==> Detected Python project (root)"
   ran_something=1
   if command -v ruff >/dev/null 2>&1; then ruff check .; fi
   if command -v mypy >/dev/null 2>&1; then mypy .; fi
