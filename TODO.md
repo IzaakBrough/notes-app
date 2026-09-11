@@ -42,7 +42,7 @@ precisely you write the "done when" clause up front, the less that happens.
 
 <!-- Add real items below this line, oldest/highest-priority first. -->
 
-- [ ] Scaffold `server/` — a FastAPI backend for the encrypted notes app, in
+- [x] Scaffold `server/` — a FastAPI backend for the encrypted notes app, in
       its own self-contained Python environment (`server/pyproject.toml`,
       `.venv/` inside `server/`, isolated from the root `package.json`).
       Include: a `GET /health` endpoint returning `{"status": "ok"}`; local
