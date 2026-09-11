@@ -58,7 +58,7 @@ precisely you write the "done when" clause up front, the less that happens.
       file gets created), and starting the app locally
       (`uvicorn app.main:app`) and requesting `/health` returns 200.
 
-- [ ] Password setup + unlock flow — Argon2 password hashing
+- [x] Password setup + unlock flow — Argon2 password hashing
       (`argon2-cffi`) with a stored verification hash plus a separately
       stored KDF salt used to derive a Fernet key from the password (raw key
       and plaintext password are never persisted). Add `POST /setup` (sets
