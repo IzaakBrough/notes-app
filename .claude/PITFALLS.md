@@ -27,6 +27,27 @@ recurring pitfall is really a missing convention.
 
 -->
 
+### `npm`/`npx` can EPERM in a bash shell on this machine — not a repo bug
+
+On this machine, `C:\nvm4w\nodejs` is a symlink into a _different_ Windows
+user profile's AppData (an admin account used to install Node via nvm for
+Windows) that the normal account can't traverse. `node --version` works, but
+running `npm`/`npx` (including through `scripts/verify.sh`) fails with
+`EPERM: operation not permitted, lstat 'C:\Users\<other-profile>\AppData'`,
+because Node's module loader tries to fully resolve the real path of its own
+entry script. Don't try to fix PATH, reinstall Node, or touch repo files
+over this — it's a local machine quirk, not something wrong with the
+project. Work around it for the current shell only:
+
+```bash
+node --preserve-symlinks --preserve-symlinks-main "/c/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js" "$@"
+```
+
+i.e. put a tiny `npm` shim script on `PATH` ahead of the broken one that
+calls `node` with those two flags (they skip the realpath resolution that
+was EPERM-ing) and forwards all arguments — then `bash scripts/verify.sh`
+runs normally.
+
 ### The placeholder-marker scan in `verify.sh` can false-positive on lockfiles
 
 `package-lock.json`'s generated integrity hashes are arbitrary base64 and can

@@ -1,3 +1,8 @@
 dist
 node_modules
 package-lock.json
+
+# server/ is a self-contained Python backend with its own tooling (ruff) —
+# root Prettier shouldn't touch it, and definitely shouldn't scan its
+# gitignored venv/cache directories.
+server
