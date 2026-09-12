@@ -57,6 +57,21 @@ the scan for no real reason. Lockfiles (`package-lock.json`,
 the scan in `scripts/verify.sh` — if a similar generated file trips this
 again, exclude it the same way rather than touching real source.
 
+### A blank line before a bold-prefixed note in a TODO.md bullet breaks prettier
+
+Writing a `TODO.md` note as a separate paragraph under a list item (blank
+line, then `**Blocked:** ...` at the same indent as the bullet's other
+lines) makes prettier treat it as a new nested paragraph and reindent it —
+non-idempotently: every `prettier --write` pass indents it deeper than the
+last, so `format:check` never stabilizes. Fold the note into the same
+paragraph as the rest of the bullet (no blank line) instead, matching how
+every other multi-line item in this file is written; `prettier --write`
+then converges on the first pass. Always run `npm run format:check` (or
+`bash scripts/verify.sh` and actually read its output, not just an
+exit-code summary from a backgrounded run) before committing a `TODO.md`
+edit — a passing local run that wasn't actually inspected is not a passing
+run.
+
 ### `git worktree remove` can fail with "Permission denied" on Windows/OneDrive
 
 On a repo synced through OneDrive (or similar), `git worktree remove` can

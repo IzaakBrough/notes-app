@@ -89,7 +89,18 @@ precisely you write the "done when" clause up front, the less that happens.
       create/list/get/search plus the tag and date-range filters, confirms
       the raw SQLite row for a note's body is not plaintext, and confirms
       each endpoint 401s without a valid session token — all passing under
-      `bash scripts/verify.sh`.
+      `bash scripts/verify.sh`. **Blocked:** this item requires the
+      session-token auth from "Password setup + unlock flow" above, which
+      isn't in `main` yet — that item's PR
+      (`feature/password-setup-unlock-flow`) is open but not merged, and this
+      environment has no `gh` CLI or API token to merge it directly (only a
+      human can, per this repo's rules). Branching this item from `main` per
+      convention means `app/auth.py` and the session dependency don't exist
+      yet; implementing Notes CRUD without them would silently drop the
+      "valid session token" requirement, and reimplementing them here would
+      duplicate the other branch and guarantee a merge conflict once both
+      land. Once `feature/password-setup-unlock-flow` is merged into `main`,
+      branch this item from the updated `main` and it's straightforward.
 
 - [ ] Frontend: unlock screen + Tailwind setup — add Tailwind CSS to the
       Vite/React template (per the Tailwind v4 Vite plugin, since this repo
