@@ -114,6 +114,16 @@ precisely you write the "done when" clause up front, the less that happens.
       `GET /notes/{id}`. Done when `npm test` covers capture-and-refresh
       (a new note submitted via the capture bar appears in the list, mocked
       fetch) and the date-grouping logic, and `npm run build` succeeds.
+      **Blocked:** every `/notes` request here needs the session token from
+      `useAuthSession()` (added in "Frontend: unlock screen + Tailwind
+      setup" above, on the still-unmerged
+      `feature/unlock-screen-tailwind`) to send a valid `Authorization`
+      header, and that item's backend counterpart (Notes CRUD) is itself
+      blocked on the unmerged password/unlock PR — see the note on that item
+      above. Branching from `main` right now has neither piece; wiring this
+      up would mean either omitting the auth header (violating the API
+      contract) or re-implementing the auth context here and conflicting
+      with the other branch once it merges. Revisit once both of those land.
 
 - [ ] Frontend: search and tag filtering — a search/filter bar above the
       note list with a text input hitting `GET /notes/search?q=...`
@@ -122,7 +132,9 @@ precisely you write the "done when" clause up front, the less that happens.
       results and returning to the unfiltered list when cleared. Done when
       `npm test` covers entering a search term filtering the rendered list
       and selecting a tag filtering it by tag (both with mocked fetch), and
-      `npm run build` succeeds.
+      `npm run build` succeeds. **Blocked:** this filters the note list
+      built in "Frontend: capture bar + note list" above, which is itself
+      blocked on the same unmerged auth work — see that item's note.
 
 <!-- Out of scope for this pass — deferred on purpose, not forgotten. -->
 
