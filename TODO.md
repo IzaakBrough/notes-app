@@ -91,7 +91,7 @@ precisely you write the "done when" clause up front, the less that happens.
       each endpoint 401s without a valid session token — all passing under
       `bash scripts/verify.sh`.
 
-- [ ] Frontend: unlock screen + Tailwind setup — add Tailwind CSS to the
+- [x] Frontend: unlock screen + Tailwind setup — add Tailwind CSS to the
       Vite/React template (per the Tailwind v4 Vite plugin, since this repo
       already uses Vite's rolldown-based tooling) and build
       `src/pages/Unlock.tsx`: a password field that calls `POST /unlock` (or
