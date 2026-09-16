@@ -1,0 +1,35 @@
+name: auto-pr
+
+# Opens a PR against main for a pushed branch if one doesn't already exist.
+# This only *creates* PRs — merging stays entirely manual, per CLAUDE.md's
+# "nothing in this repo auto-merges" rule. Uses the ephemeral, automatically
+# provisioned GITHUB_TOKEN (scoped by the `permissions` block below), never a
+# secret stored in the repo.
+on:
+  push:
+    branches-ignore:
+      - main
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Open a PR against main if one doesn't exist yet
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          branch="${GITHUB_REF#refs/heads/}"
+          existing=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$branch" --base main --state open --json number --jq 'length')
+          if [ "$existing" -eq 0 ]; then
+            gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
+              --title "$(git log -1 --pretty=%s)" \
+              --body "Auto-opened by CI when \`$branch\` was pushed. A human still reviews and merges — this workflow only creates the PR."
+          else
+            echo "PR already open for $branch, skipping."
+          fi
